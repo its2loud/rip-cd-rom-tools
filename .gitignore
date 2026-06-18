@@ -1,0 +1,6 @@
+# generierte / projektspezifische Dateien nicht ins Tools-Repo
+README.html
+render_readme.sh
+__pycache__/
+*.pyc
+*.bak
