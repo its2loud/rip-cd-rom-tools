@@ -20,10 +20,11 @@ cdrdaos:
 
 **Linux-Box (Rippen + Audio)** — Debian/Mint:
 ```bash
-sudo apt install cdrdao cdparanoia bchunk ffmpeg python3
+sudo apt install cdrdao cdparanoia libcdio-utils bchunk ffmpeg python3
+sudo apt install gddrescue
 ```
 `cdrdao` (rippt + bringt `toc2cue` mit) · `cdparanoia` (Audio→WAV, listet auch die Tracks) ·
-`bchunk` (BIN→Tracks) · `ffmpeg` (WAV→MP3) · `python3` (fpr scripts).
+`bchunk` (BIN→Tracks) · `ffmpeg` (WAV→MP3) · `python3` (für scripts) · `libcdio-utils` (für cd-info/ tracks), `gddrescue` (sicheres dd).
 
 ---
 
@@ -32,17 +33,43 @@ sudo apt install cdrdao cdparanoia bchunk ffmpeg python3
 ```bash
 # Welche optischen Laufwerke gibt es?
 ls -l /dev/sr* /dev/cdrom* 2>/dev/null
-cat /proc/sys/dev/cdrom/info          # Laufwerksliste + Faehigkeiten
+# Laufwerksliste + Fähigkeiten
+cat /proc/sys/dev/cdrom/info
+# Report mit Trackdaten
+cd-info /dev/sr0
 
 # Hat die CD ueberhaupt Audiotracks? (sonst reicht eine reine ISO, kein swab noetig)
-cdparanoia -Q -d /dev/sr0             # listet die Audiotracks (keine -> reine Daten-CD)
+# listet die Audiotracks (keine -> reine Daten-CD)
+cdparanoia -Q -d /dev/sr0
+
+mount | grep sr
+sudo umount /dev/sr0
 ```
-- **Nur ein Datentrack** → einfach eine ISO ziehen (`dd … bs=2048 count=<N>`), fertig.
+- **Nur ein Datentrack** → einfach eine ISO ziehen, fertig.
 - **Datentrack + Audiotracks** → Mixed-Mode Bundles
+
 
 Im Folgenden ist `/dev/sr0` das Laufwerk und `game` der Basisname — anpassen.
 
 ---
+
+## ISO von Daten CD
+```bash
+cd-info /dev/sr0          # "CD-DATA (Mode 1)" + genau ein data-Track?
+isoinfo -d -i /dev/sr0    # liefert "Volume size is: <BLOCKS>" (in 2048er-Blöcken)
+
+# Empfohlen
+# -b 2048 = Sektorgröße, -r3 = 3 Wiederholungen
+sudo ddrescue -b 2048 -r3 /dev/sr0 game.iso ddrescue.mapfile
+
+# Alternative mit dd
+N=$(isoinfo -d -i /dev/sr0 | awk '/Volume size is:/{print $4}')
+sudo dd if=/dev/sr0 of=game.iso bs=2048 count="$N" status=progress
+
+# Verifizieren
+isoinfo -d -i game.iso                       # plausible Volume size / Label?
+sudo mount -o loop,ro game.iso /mnt && ls -la /mnt && sudo umount /mnt
+```
 
 ## Bundle BIN/CUE (von der CD)
 
@@ -105,6 +132,7 @@ Nach erfolgreichem Test (Bundle läuft in DOSBox) aufräumen — Beispiel `game`
 ```bash
 rm game.bin.bak                    # swab-Backup (BIN/CUE)
 rm -f track*.cdda.wav              # WAVs von cdparanoia (ISO/MP3)
+rm ddrescue.mapfile                # ddrescue Protokoll
 bash rename_image.sh game tomb2    # game.* -> tomb2.* inkl. Referenzen in .toc/.cue
 ```
 > Im jeweiligen Bundle-Ordner ausführen. Nach `rename_image` die Conf-Pfade (`…/game.cue`)
