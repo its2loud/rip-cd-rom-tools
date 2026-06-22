@@ -61,6 +61,8 @@ isoinfo -d -i /dev/sr0    # liefert "Volume size is: <BLOCKS>" (in 2048er-Blöck
 # Empfohlen
 # -b 2048 = Sektorgröße, -r3 = 3 Wiederholungen
 sudo ddrescue -b 2048 -r3 /dev/sr0 game.iso ddrescue.mapfile
+# --direct und --reverse bei fehlerhaften Sektoren
+sudo ddrescue -d -R -b 2048 -r3 /dev/sr0 game.iso ddrescue.mapfile
 
 # Alternative mit dd
 N=$(isoinfo -d -i /dev/sr0 | awk '/Volume size is:/{print $4}')
@@ -111,8 +113,10 @@ bchunks `-s` swappt die Audio-Byte-Order selbst, wenn die BIN *nicht* geswabbt i
 ```bash
 # 1. Daten-ISO exakt auslesen. Blockzahl = ISO9660-"Volume Space Size" aus dem PVD
 #    (Sektor 16, Byte 80, 32-bit little-endian):
-N=$(dd if=/dev/sr0 bs=2048 skip=16 count=1 2>/dev/null | od -An -tu4 -j80 -N4 | tr -d ' ')
-dd if=/dev/sr0 of=game.iso bs=2048 count="$N"
+# 	N=$(dd if=/dev/sr0 bs=2048 skip=16 count=1 2>/dev/null | od -An -tu4 -j80 -N4 | tr -d ' ')
+# 	dd if=/dev/sr0 of=game.iso bs=2048 count="$N"
+
+sudo ddrescue -b 2048 -r3 /dev/sr0 game.iso ddrescue.mapfile
 
 # 2. Audio verlustlos als WAV -> MP3 (cdparanoia liefert korrekte Byte-Order, kein swab).
 mkdir -p mp3
