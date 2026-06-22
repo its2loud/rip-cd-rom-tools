@@ -1,7 +1,7 @@
-# CD-ROM → DOSBox-X: Mixed-Mode-CDs (Daten + CD-Audio) rippen
+# Mixed-Mode-CDs (Daten + CD-Audio) rippen
 
 Anleitung, um eine Spiele-CD mit Datentrack **und** CD-Audio (Redbook/CDDA) so
-aufzubereiten, dass sie in DOSBox-X (unter Win95) inkl. Musik läuft. Zwei Varianten:
+aufzubereiten, dass sie in DOSBox-X inkl. Musik läuft. Zwei Varianten:
 
 - **BIN/CUE** — ein Image mit Daten- und Audiotracks, per CUE gemountet.
 - **ISO/MP3** — Daten-ISO + einzelne MP3s, per CUE gebündelt (platzsparend).
