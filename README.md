@@ -45,7 +45,7 @@ cdparanoia -Q -d /dev/sr0
 mount | grep sr
 sudo umount /dev/sr0
 ```
-- **Nur ein Datentrack** → einfach eine ISO ziehen, fertig.
+- **Nur ein Datentrack** → einfache ISO
 - **Datentrack + Audiotracks** → Mixed-Mode Bundles
 
 
@@ -91,13 +91,13 @@ python3 swab_audio.py game.bin game.toc
 #    python3 swab_audio.py game.bin game.toc --no-backup
 ```
 **Ergebnis:** `game.cue` + `game.bin` (LE).
-Das Backup `game.bin.bak` kann nach erfolgreichem Test gelöscht werden.
+Backup `game.bin.bak` kann nach erfolgreichem Test gelöscht werden.
 
 ---
 
 ## Optional — MP3s aus der vorhandenen BIN (ohne CD)
 
-Sinnvoll, wenn nur noch das Image existiert. **Voraussetzung:** mit `--read-raw` gerippt
+**Voraussetzung:** mit `--read-raw` gerippt
 (gleichmäßige 2352-Sektoren) und `game.bin` bereits **little-endian** oder bchunk mit -s.
 
 ```bash
@@ -132,15 +132,14 @@ python3 make_mp3_cue.py game.iso mp3/ --rel
 
 ## Cleanup
 
-Nach erfolgreichem Test (Bundle läuft in DOSBox) aufräumen — Beispiel `game` → `tomb2`:
+Beispiel `game` → `tomb2`:
 ```bash
 rm game.bin.bak                    # swab-Backup (BIN/CUE)
 rm -f track*.cdda.wav              # WAVs von cdparanoia (ISO/MP3)
 rm ddrescue.mapfile                # ddrescue Protokoll
 bash rename_image.sh game tomb2    # game.* -> tomb2.* inkl. Referenzen in .toc/.cue
 ```
-> Im jeweiligen Bundle-Ordner ausführen. Nach `rename_image` die Conf-Pfade (`…/game.cue`)
-> auf den neuen Namen nachziehen.
+> Im jeweiligen Bundle-Ordner ausführen.
 
 ---
 
@@ -192,9 +191,9 @@ bchunk game.bin game.cue track    # ohne -w
 
 ### Audio aus einem Image OHNE `--read-raw` (Script `carve_audio.py`)
 
-bchunk scheitert an der gemischten Sektorgröße (Anhang A). `carve_audio.py` löst das autark:
+bchunk scheitert an der gemischten Sektorgröße (Anhang A). `carve_audio.py` löst das:
 es schneidet den Audiobereich heraus (→ `audio-only.bin`, uniform 2352) und schreibt die
-passende all-Audio-CUE (→ `audio-only.cue`); Offset und Trackgrenzen liest es selbst aus der
+passende all-Audio-CUE (→ `audio-only.cue`); Offset und Trackgrenzen liest es aus der
 `.toc`. Voraussetzung: `game.bin` ist bereits **little-endian** (swab gelaufen).
 
 ```bash
