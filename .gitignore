@@ -1,6 +1,6 @@
 # generierte / projektspezifische Dateien nicht ins Tools-Repo
 README.html
-render_readme.sh
+render_readme.command
 CLAUDE.md
 __pycache__/
 *.pyc
